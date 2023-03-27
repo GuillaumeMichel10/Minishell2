@@ -25,12 +25,11 @@ char **my_str_to_word_array(char *str, const char *delimiters)
     char *ptr = str;
     int nb_lines = count_words(str, delimiters);
     char **tab = malloc(sizeof(char *) * (nb_lines + 1));
-
     tab[nb_lines] = NULL;
     for (int i = 0; i < nb_lines; ++i){
-        tab[i] = extract_word(&ptr, delimiters);
         while (*ptr && my_strchr(*ptr, delimiters))
             ++ptr;
+        tab[i] = extract_word(&ptr, delimiters);
     }
     return (tab);
 }
