@@ -5,7 +5,7 @@
 ** lr_linked_list
 */
 
-#include "lr_linked_list.h"
+#include "../mysh.h"
 
 lr_node_t *new(type_t type, char *data)
 {
@@ -20,32 +20,34 @@ lr_node_t *new(type_t type, char *data)
     return (node);
 }
 
-void add_left(lr_list_t *list, lr_node_t *parent, lr_node_t *child)
+void add(lr_list_t *list, lr_node_t *node)
 {
-    if (parent->left)
+    if (!list | !node)
         return;
-    parent->left = child;
-    child->up = parent;
-    ++list->nb_nodes;
+    list->old = list->young;
+    list->young = node;
+    if (!list->old->left) {
+        list->old->left = list->young;
+        list->young->up = list->old;
+    } else {
+        list->old->right = list->young;
+        list->young->up = list->old;
+    }
 }
 
-void add_right(lr_list_t *list, lr_node_t *parent, lr_node_t *child)
+void add_top(lr_list_t *list, lr_node_t *node)
 {
-    if (parent->right)
+    if (!list || !node)
         return;
-    parent->right = child;
-    child->up = parent;
-    ++list->nb_nodes;
-}
-
-void add_up(lr_list_t *list, lr_node_t *child, lr_node_t *parent)
-{
-    if (child->up)
-        return;
-    child->up = parent;
-    parent->left = child;
-    ++list->nb_nodes;
-    list->top = parent;
+    if (!list->top) {
+        list->young = node;
+        list->top = node;
+    } else {
+        list->old = list->young;
+        list->young = node;
+        list->top = node;
+        list->top->left = list->old;
+    }
 }
 
 lr_list_t new_lr_list(void)
@@ -55,9 +57,10 @@ lr_list_t new_lr_list(void)
         .top = NULL,
         .nb_nodes = 0,
         .new = new,
-        .add_left = add_left,
-        .add_right = add_right,
-        .add_up = add_up
+        .add = add,
+        .add_top = add_top,
+        .old = NULL,
+        .young = NULL
     };
 
     return (list);
