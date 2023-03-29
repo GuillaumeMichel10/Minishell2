@@ -14,15 +14,17 @@ void display_prompt(void)
 
 void loop(void)
 {
-    char *lineptr = NULL;
     size_t n = 0;
+    size_t nb_pipes = 0;
+    char *lineptr = NULL;
+    char ***commands = NULL;
 
     while (1) {
         if (isatty(0))
             display_prompt();
         if (getline(&lineptr, &n, stdin) != -1) {
-            parse(lineptr);
-            run();
+            parse(lineptr, &commands, &nb_pipes);
+            run(commands, nb_pipes);
             free (lineptr);
             lineptr = NULL;
         } else {

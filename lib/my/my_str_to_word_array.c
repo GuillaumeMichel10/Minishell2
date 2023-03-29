@@ -20,13 +20,13 @@ char *extract_word(char **str, const char *delimiters)
     return (cpy);
 }
 
-char **my_str_to_word_array(char *str, const char *delimiters)
+char **my_str_to_word_array(char *str, const char *delimiters, size_t *n)
 {
     char *ptr = str;
-    int nb_lines = count_words(str, delimiters);
-    char **tab = malloc(sizeof(char *) * (nb_lines + 1));
-    tab[nb_lines] = NULL;
-    for (int i = 0; i < nb_lines; ++i){
+    *n = count_words(str, delimiters);
+    char **tab = malloc(sizeof(char *) * (*n + 1));
+    tab[*n] = NULL;
+    for (int i = 0; i < *n; ++i){
         while (*ptr && my_strchr(*ptr, delimiters))
             ++ptr;
         tab[i] = extract_word(&ptr, delimiters);

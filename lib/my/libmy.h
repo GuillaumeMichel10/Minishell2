@@ -28,4 +28,4 @@ int my_strclen(const char *str, const char *delimiters);
 char *my_strccpy(const char *str, const char *delimiters);
 int my_strchr(const char c, const char *delimiters);
 int count_words(const char *str, const char *delimiters);
-char **my_str_to_word_array(char *str, const char *delimiters);
+char **my_str_to_word_array(char *str, const char *delimiters, size_t *n);
