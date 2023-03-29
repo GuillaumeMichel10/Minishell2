@@ -15,19 +15,15 @@ static const parsing_t parse_type[] = {
     {'\0', NULL}
 };
 
-void parse_semicolon(lr_list_t *lr, char *data)
+bool check_type(lr_list_t *lr, char *data)
 {
-    lr->add_top(lr, lr->new(semicolon, data));
-}
-
-void parse_pipe(lr_list_t *lr, char *data)
-{
-    lr->add_top(lr, lr->new(pipeline, data));
-}
-
-void parse_redirect(lr_list_t *lr, char *data)
-{
-    lr->add_top(lr, lr->new(redirect, data));
+    for (int k = 0; parse_type[k].ptr; ++k) {
+        if (data[0] == parse_type[k].c) {
+            parse_type[k].ptr(lr, data);
+            return (true);
+        }
+    }
+    return (false);
 }
 
 void parse(char *input)
@@ -37,32 +33,13 @@ void parse(char *input)
     lr_list_t lr = new_lr_list();
 
     for (int i = 0; text[i]; ++i) {
-        for (int k = 0; parse_type[k].ptr; ++k) {
-            if (text[i][0] == parse_type[k].c) {
-                parse_type[k].ptr(&lr, text[i]);
-                continue;
-            }
-        }
-        if (!lr.top) {
-            lr.add_top(&lr, lr.new(cmd, text[i]));
+        if (check_type(&lr, text[i]))
+            continue;
+        if (lr.root && (lr.last->type == redirect || lr.last->type == arg)) {
+            printf("1\n");
+            lr.add_last(&lr, lr.new(arg, text[i]));
         } else {
-            if (lr.old->type == redirect) {
-                lr.add(&lr, lr.new(arg, text[i]));
-            } else if (lr.old->type == arg) {
-                lr.add(&lr, lr.new(arg, text[i]));
-            } else {
-                lr.add(&lr, lr.new(cmd, text[i]));
-            }
+            lr.add_last(&lr, lr.new(cmd, text[i]));
         }
     }
-
-    lr_node_t *node = lr.top;
-
-    while (node){
-        printf("%s\n", node->data);
-        node = node->left;
-    }
-    lr.top = lr.new(cmd, text[0]);
-
 }
-

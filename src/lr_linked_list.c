@@ -13,54 +13,52 @@ lr_node_t *new(type_t type, char *data)
 
     node->type = type;
     node->data = data;
-    node->left = NULL;
-    node->right = NULL;
-    node->up = NULL;
+    node->child = NULL;
+    node->next = NULL;
+    node->input_fd = -1;
+    node->output_fd = -1;
 
     return (node);
 }
 
-void add(lr_list_t *list, lr_node_t *node)
-{
-    if (!list | !node)
-        return;
-    list->old = list->young;
-    list->young = node;
-    if (!list->old->left) {
-        list->old->left = list->young;
-        list->young->up = list->old;
-    } else {
-        list->old->right = list->young;
-        list->young->up = list->old;
-    }
-}
-
-void add_top(lr_list_t *list, lr_node_t *node)
+void add_last(lr_list_t *list, lr_node_t *node)
 {
     if (!list || !node)
         return;
-    if (!list->top) {
-        list->young = node;
-        list->top = node;
+    if (!list->root) {
+        list->last = node;
+        list->first = node;
+        list->root = node;
     } else {
-        list->old = list->young;
-        list->young = node;
-        list->top = node;
-        list->top->left = list->old;
+        list->last->child = node;
+        list->last = node;
+    }
+}
+
+void add_first(lr_list_t *list, lr_node_t *node)
+{
+    if (!list || !node)
+        return;
+    if (!list->root) {
+        list->last = node;
+        list->first = node;
+        list->root = node;
+    } else {
+        list->first->next = node;
+        list->first = node;
+        list->last = node;
     }
 }
 
 lr_list_t new_lr_list(void)
 {
     lr_list_t list = {
-        .left = NULL,
-        .top = NULL,
-        .nb_nodes = 0,
+        .first = NULL,
+        .last = NULL,
+        .root = NULL,
         .new = new,
-        .add = add,
-        .add_top = add_top,
-        .old = NULL,
-        .young = NULL
+        .add_first = add_first,
+        .add_last = add_last
     };
 
     return (list);

@@ -22,6 +22,7 @@ void loop(void)
             display_prompt();
         if (getline(&lineptr, &n, stdin) != -1) {
             parse(lineptr);
+            run();
             free (lineptr);
             lineptr = NULL;
         } else {
