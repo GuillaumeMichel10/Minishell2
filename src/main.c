@@ -7,7 +7,8 @@
 
 #include "../mysh.h"
 
-int main()
+int main(int ac, char **av, char **env)
 {
-    loop();
+    mysh_t mysh = setup(env);
+    loop(&mysh);
 }
