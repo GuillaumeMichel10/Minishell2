@@ -7,12 +7,28 @@
 
 #include "../mysh.h"
 
-void my_env(mysh_t *mysh, node_t *node)
+void my_env(mysh_t *mysh)
 {
-    node_t *env = mysh->env.first;
+    for (int i = 0; mysh->env[i]; ++i) {
+        my_putstr(mysh->env[i]);
+        my_putchar('\n');
+    }
+}
 
-    while (env) {
-        printf("%s\n", env->text[0]);
-        env = env->next;
+int my_setenv(mysh_t *mysh, node_t *node)
+{
+    for (int i = 0; node->text[i]; ++i) {
+        if (my_strchr(node->text[i][0], "<>"))
+            return (0);
+    }
+    switch (node->len) {
+        case 1:
+            return (0);
+        case 2 ... 3:
+
+            return (1);
+        default:
+            my_putstr("setenv: Too many arguments.");
+            return (1);
     }
 }

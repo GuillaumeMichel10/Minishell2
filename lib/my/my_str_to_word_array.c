@@ -27,6 +27,7 @@ char **my_str_to_word_array(char *str, const char *delimiters, size_t *n)
 
     *n = count_words(str, delimiters);
     tab = malloc(sizeof(char *) * (*n + 1));
+    tab[*n] = NULL;
     for (int i = 0; i < *n; ++i) {
         while (*ptr && my_strchr(*ptr, delimiters))
             ++ptr;

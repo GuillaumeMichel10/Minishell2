@@ -53,8 +53,7 @@ int redirect_in(char **arguments)
         if (my_strcmp(arguments[i], "<") == 0 || my_strcmp(arguments[i], "<<") == 0) {
             redirect_in_from(arguments[i + 1]);
             erase(&arguments[i], 2);
-//            if (!arguments[i])
-//                return (false);
+            return (0);
         }
     }
     return (true);
@@ -64,30 +63,14 @@ int redirect_out(char **arguments)
 {
     for (int i = 0; arguments[i]; ++i) {
         if (my_strcmp(arguments[i], ">") == 0) {
-            if (!arguments[i + 1])
-                return (false);
-            if (my_strcmp(arguments[i + 1], ">") == 0)
-                return (false);
             redirect_out_to(arguments[i + 1], 1);
             erase(&arguments[i], 2);
-            if (!arguments[i]) {
-                return (true);
-            } else {
-                return (false);
-            }
+            return (0);
         }
         if (my_strcmp(arguments[i], ">>") == 0) {
-            if (!arguments[i + 1])
-                return (false);
-            if (my_strcmp(arguments[i + 1], ">>") == 0)
-                return (false);
             redirect_out_to(arguments[i + 1], 2);
             erase(&arguments[i], 2);
-            if (!arguments[i]) {
-                return (true);
-            } else {
-                return (false);
-            }
+            return (0);
         }
     }
     return (true);

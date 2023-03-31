@@ -34,7 +34,8 @@ typedef struct list_s {
 
 typedef struct mysh_s{
     list_t commands;
-    list_t env;
+    list_t list_env;
+    char **env;
     char *oldpwd;
 }mysh_t;
 
@@ -57,10 +58,12 @@ int redirect_out(char **arguments);
 int redirect_in(char **arguments);
 
 int built_in(mysh_t *mysh, node_t *node);
-void my_cd(mysh_t *mysh, node_t *node);
-void my_env(mysh_t *mysh, node_t *node);
+int my_cd(mysh_t *mysh, node_t *node);
+int my_setenv(mysh_t *mysh, node_t *node);
+
+void my_env(mysh_t *mysh);
 
 typedef struct built_in_t {
     char *name;
-    void (*ptr)(mysh_t *, node_t *);
+    int (*ptr)(mysh_t *, node_t *);
 }built_in_t;

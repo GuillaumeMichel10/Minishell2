@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
+#include <stdarg.h>
 
 void my_putchar(const char c);
 void my_puterr(const char *str);
@@ -29,3 +30,4 @@ char *my_strccpy(const char *str, const char *delimiters);
 int my_strchr(const char c, const char *delimiters);
 int count_words(const char *str, const char *delimiters);
 char **my_str_to_word_array(char *str, const char *delimiters, size_t *n);
+char *my_concat(int count, ...);
