@@ -18,7 +18,7 @@ int my_atoi(const char *str)
         ++i;
     if (str[i] == '-' || str[i] == '+')
         sign = (str[i++] == '-') ? -1 : 1;
-    while (str[i] && is_digit(str[i])) {
+    while (str[i] && my_isdigit(str[i])) {
         digit = str[i++] - '0';
         if (result > INT_MAX / 10 ||
         (result == INT_MAX / 10 && digit > INT_MAX % 10)){

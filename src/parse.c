@@ -7,45 +7,37 @@
 
 #include "../mysh.h"
 
-int valid_command(char **command)
-{
-    int redirect = 0;
-
-    for (int i = 0; command[i]; ++i) {
-        if (!my_strchr(command[i][0], "<>"))
-            continue;
-        if (i == 0) {
-            my_puterr("Invalid null command.\n");
-            return (0);
-        }
-        if (!command[i + 1] || my_strchr(command[i + 1][0], "<>")) {
-            my_puterr("Missing name for redirect.\n");
-            return (0);
-        }
-        if (++redirect > 2) {
-            my_puterr("Ambiguous output redirect.\n");
-            return (0);
-        }
-    }
-
-    return (1);
-}
-
-void parse(mysh_t *mysh, char *input, size_t *n)
+list_t *semicolons(mysh_t *mysh, char *input)
 {
     size_t k = 0;
+    list_t *list = new_liked_list();
     node_t *node = NULL;
     char **command = NULL;
-    char **text = my_str_to_word_array(input, "|", n);
+    char **text = my_str_to_word_array(input, "|", &k);
 
-    if (mysh->commands.nb_nodes != 0)
-        my_puterr("free");
     for (int i = 0; text[i]; ++i) {
         command = my_str_to_word_array(text[i], " \t\n", &k);
-        if (valid_command(command)) {
-            node = mysh->commands.new(command, k);
-            mysh->commands.add(&mysh->commands, node);
-        } else {}
+        if (!command || !command[0])
+            continue;
+        node = list->new(command, k);
+        if (valid_input(mysh, node)) {
+            list->add(list, node);
+        } else {
+            mysh->error = 1;
+        }
     }
-    --(*n);
+    return (list);
+}
+
+void parse(mysh_t *mysh, char *input)
+{
+    size_t k = 0;
+    list_t *list = NULL;
+    char **commands = my_str_to_word_array(input, ";", &k);
+
+    mysh->commands = new_heap(k);
+    for (int i = 0; commands[i]; ++i) {
+        list = semicolons(mysh, commands[i]);
+        mysh->commands.add(&mysh->commands, list);
+    }
 }

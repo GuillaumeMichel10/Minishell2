@@ -20,6 +20,7 @@ static node_t *new (char **text, int len)
     node->len = len;
     node->prev = NULL;
     node->next = NULL;
+    node->str = NULL;
 
     return (node);
 }
@@ -40,15 +41,45 @@ static void add (list_t *list, node_t *node)
     ++list->nb_nodes;
 }
 
-list_t new_liked_list(void)
+void free_pop(node_t *node)
 {
-    list_t list = {
-        .first = NULL,
-        .last = NULL,
-        .nb_nodes = 0,
-        .add = add,
-        .new = new
-    };
+    for (int i = 0; node->text[i]; ++i)
+        free(node->text[i]);
+    free(node->text);
+    free(node);
+}
+
+void pop(list_t *list, node_t *node)
+{
+    if (--list->nb_nodes == 0) {
+        list->last = NULL;
+        list->first = NULL;
+        free_pop(node);
+        return;
+    }
+    if (node == list->first) {
+        list->first = node->next;
+        list->first->prev = NULL;
+    } else if (node == list->last) {
+        list->last = node->prev;
+        list->last->next = NULL;
+    } else {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+    free_pop(node);
+}
+
+list_t *new_liked_list(void)
+{
+    list_t *list = malloc(sizeof(*list));
+
+    list->last = NULL;
+    list->first = NULL;
+    list->nb_nodes = 0;
+    list->add = add;
+    list->pop = pop;
+    list->new = new;
 
     return (list);
 }

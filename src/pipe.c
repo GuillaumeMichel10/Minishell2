@@ -17,7 +17,7 @@ void close_pipe(int pipes[2][2], const int nb_pipes, const int n)
     }
 }
 
-int connect_pipe(int pipes[2][2], const int nb_pipes, const int n)
+void connect_pipe(int pipes[2][2], const int nb_pipes, const int n)
 {
     if (nb_pipes) {
         if (n == nb_pipes || n != 0)
@@ -25,7 +25,6 @@ int connect_pipe(int pipes[2][2], const int nb_pipes, const int n)
         if (n == 0 || n != nb_pipes)
             dup2(pipes[0][1], STDOUT_FILENO);
     }
-    return (true);
 }
 
 void swap_pipe(int **pipes)

@@ -22,16 +22,39 @@ char *get_current_working_directory(void)
     return (cwd);
 }
 
-void run_chdir(mysh_t *mysh, char *path, char *cwd)
+void my_chdir(mysh_t *mysh, char *path, char *cwd)
 {
     if (chdir(path) == -1) {
         my_putstr(path);
-        my_putstr(": Not a directory.\n");
+        if (access(path, F_OK) == 0) {
+            my_putstr(": Not a directory.\n");
+        } else {
+            my_puterr(": No such file or directory.\n");
+        }
+        mysh->error = 1;
         free (cwd);
         return;
     }
     free(mysh->oldpwd);
     mysh->oldpwd = cwd;
+}
+
+void my_cd_home(mysh_t *mysh, char *cwd)
+{
+    if (chdir(mysh->home) == -1) {
+        my_puterr("cd: No home directory.");
+        mysh->error = 1;
+        free (cwd);
+    }
+}
+
+void my_cd_with_args(mysh_t *mysh, node_t *node, char *cwd)
+{
+    if (my_strcmp(node->text[1], "-") == 0) {
+        my_chdir(mysh, mysh->oldpwd, cwd);
+    } else {
+        my_chdir(mysh, node->text[1], cwd);
+    }
 }
 
 int my_cd(mysh_t *mysh, node_t *node)
@@ -40,19 +63,16 @@ int my_cd(mysh_t *mysh, node_t *node)
 
     switch (node->len) {
         case 1 :
-            run_chdir(mysh, "/home", cwd);
-            return (1);
+            my_cd_home(mysh, cwd);
+            break;
         case 2 :
-            if (my_strcmp(node->text[1], "-") == 0) {
-                run_chdir(mysh, mysh->oldpwd, cwd);
-                return (1);
-            }
-            run_chdir(mysh, node->text[1], cwd);
-            return (1);
-        default :
+            my_cd_with_args(mysh, node, cwd);
+            break;
+        default:
             my_putstr("cd: Too many arguments.\n");
-            free (cwd);
-            return (1);
+            mysh->error = 1;
+            free(cwd);
     }
-    return (0);
+
+    return (1);
 }

@@ -12,7 +12,7 @@ void display_prompt(void)
     my_putstr("$> ");
 }
 
-void loop(mysh_t *mysh)
+int loop(mysh_t *mysh)
 {
     size_t n = 0;
     char *lineptr = NULL;
@@ -20,12 +20,14 @@ void loop(mysh_t *mysh)
     while (1) {
         if (isatty(0))
             display_prompt();
-        if (getline(&lineptr, &n, stdin) != -1) {
-            run(mysh, lineptr);
-            free (lineptr);
-            lineptr = NULL;
-        } else {
-            return;
-        }
+        if (getline(&lineptr, &n, stdin) == -1)
+            return (mysh->error);
+        parse(mysh, lineptr);
+        for (int i = 0; i < mysh->commands.size; ++i)
+            run(mysh, mysh->commands.array[i]);
+        free (lineptr);
+        lineptr = NULL;
+        if (mysh->exit)
+            return (mysh->error);
     }
 }

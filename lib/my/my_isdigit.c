@@ -5,7 +5,7 @@
 ** is_digit
 */
 
-int is_digit(char c)
+int my_isdigit(const char c)
 {
     return ( c >= '0' && c <= '9');
 }
